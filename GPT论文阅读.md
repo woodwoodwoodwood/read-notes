@@ -115,9 +115,7 @@ $ L(U) = \sum_{i} \log P(u_i | u_{i-k}, ..., u_{i-1}; \Theta) $
 - **相似度任务**：将待比较的两个句子进行双重排列，每种排列独立处理后再汇总。
 - **问答任务**：将文档和问题与每个可能的答案拼接在一起，分别处理后进行归一化。
 
-
-
-![GPT-mutiple-tasks](C:\Users\JiangLei\Learn\github\read-notes\assets\GPT-mutiple-tasks.png)
+![GPT-mutiple-tasks](./assets/GPT-mutiple-tasks.png)
 
 每个任务将输入结构化的文本转换为模型能够处理的token序列，具体如下：
 
@@ -320,7 +318,7 @@ $ L(U) = \sum_{i} \log P(u_i | u_{i-k}, ..., u_{i-1}; \Theta) $
 
 ## 6. 不同数量的预训练层的影响
 
-![different-layer-effect](C:\Users\JiangLei\Learn\github\read-notes\assets\different-layer-effect.png)
+![different-layer-effect](./assets/different-layer-effect.png)
 
 随着从无监督预训练转移到有监督任务的层数增加，模型的表现持续提升。
 
@@ -342,7 +340,7 @@ $ L(U) = \sum_{i} \log P(u_i | u_{i-k}, ..., u_{i-1}; \Theta) $
 
 为了克服这些局限，文章强调了需要开发能够在多种域和任务上训练和测试性能的鲁棒系统，提出了多任务学习。文中提及的**多任务学习**和**元学习**观点表明，为了实现更好的泛化能力，可能需要大量的有效训练对（数据集和目标注）。
 
-![GPT2-zero-shot](C:\Users\JiangLei\Learn\github\read-notes\assets\GPT2-zero-shot.png)
+![GPT2-zero-shot](./assets/GPT2-zero-shot.png)
 
 
 
@@ -517,4 +515,4 @@ BPE 会根据频率合并高频的字符对或子词单元，因此“is”可�
 
 - **仍然有复杂度**：尽管优化了BPE的合并策略，但词汇表的管理和合并规则依然需要复杂的调优。
 
-![GPT2-input_representation](C:\Users\JiangLei\Learn\github\read-notes\assets\GPT2-input_representation.png)
+![GPT2-input_representation](./assets/GPT2-input_representation.png)

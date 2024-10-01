@@ -376,3 +376,33 @@ class f(torch.autograd.Function):
 
 - 论文的模型并行化策略的核心思想之一是**减少GPU之间的通信**并保持每个GPU的计算负载。
 - 在一些操作（如dropout、层归一化、残差连接）中，作者选择**在每个GPU上重复计算**，而不是将这些结果在多个GPU之间广播。具体来说，每个GPU保留自己独立的层归一化参数，并在每个GPU上执行dropout和残差连接操作。
+
+***
+
+# ZeRO— Zero Redundancy Optimizer
+
+> Rajbhandari, Samyam, Jeff Rasley, Olatunji Ruwase和Yuxiong He. 《ZeRO: Memory Optimizations Toward Training Trillion Parameter Models》. arXiv, 2020年5月13日. https://doi.org/10.48550/arXiv.1910.02054.
+
+Microsoft
+
+## 一、问题背景
+
+现有的技术，如 **数据并行 (Data Parallelism, DP)** 和 **模型并行 (Model Parallelism, MP)** 存在以下问题：
+
+- DP 会在每个设备上复制完整的模型状态，导致内存浪费。
+- MP 则通过将模型切分到多个设备上，虽然解决了一部分内存问题，但在设备之间的**通信瓶颈**限制了其扩展性。
+
+在本文之前的工作中，效果最好的是 MP，当时最大的模型“T5-11B”和”Megatron-LM 8.3B“都使用的是 MP。
+
+> 11B T5 model [4], and Megatron-LM 8.3B [3], were both powered by model parallelism, implemented in Mesh-Tensorflow [5] and Megatron-LM[3],
+
+但是，MP **垂直分割模型**，将每层中的计算和参数划分到多个设备上，需要每层之间进行大量通信。因此，它们在 GPU 间通信带宽较高的单个节点内运行良好，但超出单个节点时效率会迅速下降。
+
+> Furthermore, all of these approaches maintain all the model states required over the entire training process statically, even though not all model states are required all the time during the training.
+
+所有这些方法都静态地维护整个训练过程中所需的所有模型状态，即使在训练期间并非始终需要所有模型状态。
+
+ZeRO 的设计旨在通过消除数据和模型并行训练中的内存冗余问题，来大幅提高内存效率。内存被分为两部分：
+
+- **模型状态 (Model States)**：包括模型参数、优化器状态（如Adam中的momentom和variances）和梯度。这些通常占据了大部分内存。
+- **剩余状态 (Residual States)**：包括激活值、临时缓存和内存碎片。
